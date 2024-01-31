@@ -17,6 +17,10 @@ class Cube {
   // battery
   int battery;
   
+  //button
+  boolean buttonDown;
+  int lastPressed;
+  
   // motion
   boolean isHorizontal;
   boolean collision;
@@ -42,11 +46,16 @@ class Cube {
   int qw;
   int qz;
   
+  recordManager record;
+  
   Cube(int i) {
     id = i;
     lastUpdate = System.currentTimeMillis();
     isActive = false;
     ready = true;
+    buttonDown = false;
+    
+    record = new recordManager(id);
   }
   
   void checkActive(long now) {
@@ -61,7 +70,7 @@ class Cube {
     y = upy;
     theta = uptheta; 
     
-    recorder.update(id, x, y);
+    record.addMove(x, y);
     
     lastUpdate = System.currentTimeMillis();
     isActive = true;
@@ -124,35 +133,46 @@ class Cube {
   
   //Execute this code on button press
   void onButtonDown() {
-    println("Button Pressed!");
+    //println("Button Pressed!");
+    buttonDown = true;
+    lastPressed = millis();
     
     //insert code here
   }
   
   //Execute this code on button release
   void onButtonUp() {
-    println("Button Released");
+    //println("Button Released");
+    buttonDown = false;
+    
+    if (millis() - lastPressed < 1000) {
+      if (record.status == Status.PAUSED) {
+        record.unpause();
+      } else {
+        record.pause();
+      }
+    }
     
     //insert code here
   }
   
   //Execute this code on collision
   void onCollision() {
-    println("Collision Detected!");
+    //println("Collision Detected!");
     
     //insert code here
   }
   
   //Execute this code on double tap
   void onDoubleTap() {
-    println("Double Tap Detected!");
+    //println("Double Tap Detected!");
     
     //insert code here
   }
   
   //Execute this code on motor response
   void onMotorResponse(int control, int response) {
-    println("Motor Target Response!");
+    //println("Motor Target Response!");
     ready = true;
     
     //insert code here

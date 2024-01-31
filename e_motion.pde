@@ -16,16 +16,17 @@ OscP5 oscP5;
 NetAddress[] server;
 
 int screenSize = 500;
+float scale = 1.2;
 
 Cube[] cubes;
 int nCubes = 9;
 
-boolean isRecording = true;
-Recorder recorder;
-Recording recording = new Recording();
+//boolean isRecording = true;
+//Recorder recorder;
+//Recording recording = new Recording();
 
 void settings() {
-  size(screenSize, screenSize, P2D);
+  size( (int) (screenSize * scale), (int) (screenSize * scale), P2D);
 }
 
 void setup() {
@@ -37,158 +38,48 @@ void setup() {
   cubes = new Cube[nCubes];
   for (int i = 0; i < nCubes; i++) {
     cubes[i] = new Cube(i);
+    cubes[i].led(0, 255, 0, 0);
   }
-  
-  for (int i = 0; i < nCubes; i++) {
-    print(i, cubes[i].ready, " ");
-  }
-  println();
-  
-  recorder = new Recorder();
-  
-  //recording = new Recording();
-  //for (int i = 0; i < 300; i++) {
-  //  recording.addMove(i * 16, 0, i + 60, i + 60);
-  //}
-  
-  recorder.recording = recording;
   
   frameRate(60);
 }
 
 void draw() {
   background(200);
-  
-  //for (int i = 0; i < 100; i++) {
-  //  push();
-  //  stroke(200, 200, 200, 0);
-  //  fill(velColor(i * 0.01));
-  //  circle(i * 5, i * 5, 10);
-  //  pop();
-  //}
-  
-  for (int i = 0; i < recorder.getMoves().size(); i++) {
-    Movement move = recorder.getMove(i);
-    push();
-    stroke(200, 200, 200, 0);
-    fill(recorder.getVelColor(i));
-    circle(move.x, move.y, 10);
-    pop();
-  }
-  
-  if (!isRecording) {
-    if (recording.currMove >= recording.moves.size()) return;
-    int[][] toioLocs = recording.toioLocs;
-    push();
-    fill(255);
-    for (int i = 0; i < nCubes; i++) {
-      line(cubes[i].x, cubes[i].y, toioLocs[i][0], toioLocs[i][1]);
-      circle(toioLocs[i][0], toioLocs[i][1], 20);
-    }
-    pop();
-  }
+  push();
+  noFill();
+  rect(45, 45, 410 * scale, 410 * scale);
+  pop();
   
   for (int i = 0; i < nCubes; i++) {
-    pushMatrix();
-    translate(cubes[i].x, cubes[i].y);
-    rect(-10, -10, 20, 20);
-    popMatrix();
-  }
-
-  if (isRecording) {
-    drawUI(recorder.status);
-  } else {
-    drawUI(recording.status);
-    recording.update();
-  }
-  
-}
-
-void keyPressed() {
-  switch (key) {
-    case 'e':
-      if (isRecording) {
-        recording = recorder.eject();
-        println("Ejected Recording    Start Time:", recording.startTime, "Elapsed Time:", recording.timeElapsed);
-        recording.restart();
-        isRecording = false;
-        recorder.pause(); 
+    if (cubes[i].isActive) {
+      cubes[i].record.update();
+      
+      for (int j = 0; j < cubes[i].record.size(); j++) {
+        Movement move = cubes[i].record.getMove(j);
+        push();
+        stroke(200, 200, 200, 0);
+        fill(cubes[i].record.getVelColor(j));
+        circle(move.x * scale, move.y * scale, 10 * scale);
+        pop();
       }
-      break;
       
-    case ' ':
-      if (isRecording) {
-        if (recorder.status == "Recording") {
-          recorder.pause();
-        } else {
-          recorder.play();
-        }
-      } else {
-        if (recording.status == "Play") {
-          recording.pause();
-        } else {
-          recording.play();
-        }
+      if (!cubes[i].record.isRecording) {
+        int[] toioLoc = new int[]{cubes[i].record.toioLoc[0], cubes[i].record.toioLoc[1]};
+        line(cubes[i].x * scale, cubes[i].y * scale, toioLoc[0] * scale, toioLoc[1] * scale);
+        circle(toioLoc[0] * scale, toioLoc[1] * scale, 20);
       }
-      break;
       
-    case 's':
-      if (!isRecording) {
-        println("Start Time:", recording.startTime, "Elapsed Time:", recording.timeElapsed);
-      }
-      break;
-      
-    case 'r':
-      isRecording = true;
-      recorder.restart();
-      break;
-      
-    case 'p':
-      int[][] lights = {{50, 255, 0, 0}, {50, 0, 0, 0}};
-      cubes[0].led(0, lights);
-      break;
-      
-     case 'o':
-      cubes[0].led(0, 0, 0, 0);
-      break;
-     
-  }
-}
+      pushMatrix();
+      translate(cubes[i].x * scale, cubes[i].y * scale);
+      rect(-10, -10, 20* scale, 20 * scale);
+      popMatrix();
 
-void drawUI(String status) {
-  int uiX = 15;
-  int uiY = 15;
-  int uiScale = 2;
-  
-  switch (status) {
-    case "Pause":
-      push();
-      fill(100, 225, 100);
-      stroke(0,0,0,0);
-      translate(width - uiX, uiY);
-      rect(0, 0, uiScale * -10, uiScale * 40);
-      rect(uiScale * -15,  0, uiScale * -10, uiScale * 40);
-      pop();
-      break;
-      
-    case "Play":
-      push();
-      fill(225, 100, 100);
-      stroke(0,0,0,0);
-      translate(width - uiX, uiY);
-      triangle(0, uiScale * 20, uiScale * -40, uiScale * 40, uiScale * -40, 0);
-      pop();
-      break;
-      
-    case "Recording":
-      push();
-      fill(225, 100, 100);
-      stroke(0,0,0,0);
-      translate(width - uiX, uiY);
-      circle(-40, 40, 40 * uiScale);
-      pop();
-      break;
-    default:
-    break;
+    }
+    
+    if (cubes[i].buttonDown && millis() - cubes[i].lastPressed > 1000) { 
+      cubes[i].record.changeMode();
+      cubes[i].buttonDown = false;
+    }
   }
 }

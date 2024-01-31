@@ -56,13 +56,13 @@ void motorDuration(int cubeId, int leftspeed, int rightspeed, int duration) {
   } else {
     msg.add(0x02);
   }
-  msg.add(abs(leftspeed));
+  msg.add(leftspeed);
     if (rightspeed < 0) {
     msg.add(0x01);
   } else {
     msg.add(0x02);
   }
-  msg.add(abs(rightspeed));
+  msg.add(rightspeed);
   msg.add(duration);
   oscP5.send(msg, server[hostId]);
 }
