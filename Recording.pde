@@ -38,31 +38,35 @@ class recordManager {
     return moves.size();
   }
   
+  void setLed() {
+    if (status == Status.PAUSED) {
+      if (isRecording) cubes[id].led(0, 255, 0, 0);
+      else cubes[id].led(0, 0, 255, 0);
+    } else {
+      int[][] lights;
+      if (isRecording) lights = new int[][]{{50, 255, 0, 0}, {50, 0, 0, 0}};
+      else lights = new int[][]{{50, 0, 255, 0}, {50, 0, 0, 0}};
+      cubes[id].led(0, lights);
+    }
+  }
+  
   void changeMode() {
     status = Status.PAUSED;
     isRecording = !isRecording;
     
     cubes[id].midi(10, 68, 255);
-    
-    if (isRecording) cubes[id].led(0, 255, 0, 0);
-    else cubes[id].led(0, 0, 255, 0);
+    setLed();
   }
   
   void unpause() {
     restart();
     int[][] notes = {{10, 63, 20},  {2, 0, 0}, {10, 64, 20}};
-    int[][] lights;
     
-    if (isRecording) {
-      startRecording();
-      lights = new int[][]{{50, 255, 0, 0}, {50, 0, 0, 0}};
-    } else {
-      startReady();
-      lights = new int[][]{{50, 0, 255, 0}, {50, 0, 0, 0}};
-    }
+    if (isRecording) startRecording();
+    else sync.startReady(id);
     
     cubes[id].midi(1, notes);
-    cubes[id].led(0, lights);
+    setLed();
   }
   
   void pause() {
@@ -70,11 +74,7 @@ class recordManager {
     cubes[id].midi(1, notes);
     
     status = Status.PAUSED;
-    if (isRecording) {
-      cubes[id].led(0, 255, 0, 0);
-    } else {
-      cubes[id].led(0, 0, 255, 0);
-    }
+    setLed();
   }
   
   void restart() {
@@ -83,7 +83,6 @@ class recordManager {
     
     currMove = 0;
     timeElapsed = 0;
-    pause();
   }
   
   void startRecording() {
@@ -94,10 +93,11 @@ class recordManager {
   }
   
   void startReady() {
-    currMove = 0;
-    timeElapsed = 0;
+    isRecording = false;
+    restart();
     status = Status.READYING;
     cubes[id].target(0, toioLoc[0], toioLoc[1], 0);
+    setLed();
   }
   
   void startPlay() {
@@ -112,7 +112,7 @@ class recordManager {
   void update() {
     switch (status) {
       case READYING:
-        if (cubes[id].ready == true) startPlay();
+        sync.checkReady(id);
         break;
       
       case PLAY:
@@ -139,11 +139,13 @@ class recordManager {
   
   void addMove(int x, int y) {
     if (status == Status.RECORDING) {
-      int t = millis() - startTime;
-      moves.add(new Movement(t, x, y));
-      
-      if (toioLoc[0] == 0 && toioLoc[1] == 0) toioLoc = new int[]{x, y};
+      addMove(millis() - startTime, x, y);
     }
+  }
+  
+  void addMove(int t, int x, int y) {
+    moves.add(new Movement(t, x, y));
+    if (toioLoc[0] == 0 && toioLoc[1] == 0) toioLoc = new int[]{x, y};
   }
   
   Movement getMove(int i) {
@@ -169,5 +171,55 @@ class recordManager {
     
     if (v < .5) return color(lerp(183, 252, v * 2), lerp(225, 232, v * 2), lerp(205, 178, v * 2));
     else return color(lerp(252, 244, (v - .5) * 2), lerp(232, 199, (v - .5) * 2), lerp(178, 195, (v - .5) * 2));
+  }
+}
+
+void saveRecording() {
+  Table table = new Table();
+  
+  table.addColumn("id");
+  table.addColumn("timeStamp");
+  table.addColumn("x");
+  table.addColumn("y");
+  
+  for (int i = 0; i < nCubes; i++) {
+    for (int j = 0; j < cubes[i].record.size(); j++) {
+      Movement move = cubes[i].record.getMove(j);
+      TableRow newRow = table.addRow();
+      newRow.setInt("id", i);
+      newRow.setInt("timestamp", move.timestamp);
+      newRow.setInt("x", move.x);
+      newRow.setInt("y", move.y);
+    }
+  }
+  
+  saveTable(table, "data/toio.csv");
+}
+
+void loadRecording() {
+  Table table = loadTable("toio.csv", "header");
+  
+  for (int i = 0; i < nCubes; i++) {
+    cubes[i].record.isRecording = false;
+    cubes[i].record.status = Status.PAUSED;
+    
+    cubes[i].record.toioLoc = new int[]{0, 0};
+    cubes[i].record.moves = new LinkedList<Movement>();
+  }
+  
+   println(table.getRowCount() + " total rows in table");
+   println(table.getColumnCount());
+
+  for (TableRow row : table.rows()) {
+    int id = row.getInt("id");
+    int timestamp = row.getInt("timestamp");
+    int x = row.getInt("x");
+    int y = row.getInt("y");
+    
+    cubes[id].record.addMove(timestamp, x, y);
+  }
+  
+  for (int i = 0; i < nCubes; i++) {
+    println(cubes[i].record.size());
   }
 }

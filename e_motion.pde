@@ -19,6 +19,7 @@ int screenSize = 500;
 float scale = 1.2;
 
 Cube[] cubes;
+SyncSystem sync;
 int nCubes = 9;
 
 //boolean isRecording = true;
@@ -26,7 +27,7 @@ int nCubes = 9;
 //Recording recording = new Recording();
 
 void settings() {
-  size( (int) (screenSize * scale), (int) (screenSize * scale), P2D);
+  size( (int) (screenSize * scale) + 200, (int) (screenSize * scale), P2D);
 }
 
 void setup() {
@@ -34,6 +35,7 @@ void setup() {
   oscP5 = new OscP5(this, 3333);
   server = new NetAddress[1];
   server[0] = new NetAddress("127.0.0.1", 3334);
+  sync = new SyncSystem();
   
   cubes = new Cube[nCubes];
   for (int i = 0; i < nCubes; i++) {
@@ -47,23 +49,27 @@ void setup() {
 void draw() {
   background(200);
   push();
-  noFill();
+  fill(225);
   rect(45, 45, 410 * scale, 410 * scale);
   pop();
   
+  sync.update();
+  long now = System.currentTimeMillis();
+  
   for (int i = 0; i < nCubes; i++) {
+    cubes[i].record.update();
+    cubes[i].checkActive(now);
+    
+    for (int j = 0; j < cubes[i].record.size(); j++) {
+      Movement move = cubes[i].record.getMove(j);
+      push();
+      stroke(200, 200, 200, 0);
+      fill(cubes[i].record.getVelColor(j));
+      circle(move.x * scale, move.y * scale, 10 * scale);
+      pop();
+    }
+
     if (cubes[i].isActive) {
-      cubes[i].record.update();
-      
-      for (int j = 0; j < cubes[i].record.size(); j++) {
-        Movement move = cubes[i].record.getMove(j);
-        push();
-        stroke(200, 200, 200, 0);
-        fill(cubes[i].record.getVelColor(j));
-        circle(move.x * scale, move.y * scale, 10 * scale);
-        pop();
-      }
-      
       if (!cubes[i].record.isRecording) {
         int[] toioLoc = new int[]{cubes[i].record.toioLoc[0], cubes[i].record.toioLoc[1]};
         line(cubes[i].x * scale, cubes[i].y * scale, toioLoc[0] * scale, toioLoc[1] * scale);
@@ -81,5 +87,46 @@ void draw() {
       cubes[i].record.changeMode();
       cubes[i].buttonDown = false;
     }
+  }
+  
+  drawUI();
+}
+
+void drawUI() {
+  int offsetX = 230;
+  int baselineY = 45;
+  int mainBoxWidth = 200;
+  int subBoxHeight = 50;
+  int padding = 10;
+  int mainBoxes = 2;
+  int numBoxes = 4;
+  
+  for (int i = 0; i < mainBoxes; i++) {
+    rect(width - offsetX, baselineY, mainBoxWidth, padding + (subBoxHeight + padding) * numBoxes);
+    
+    for (int j = 0; j < numBoxes; j++) {
+      baselineY += padding;
+      rect(width - offsetX + padding, baselineY, mainBoxWidth - (2 * padding), subBoxHeight);
+      baselineY += subBoxHeight;
+    }
+    baselineY += 2 * padding;
+  }
+  
+  for (int j = 0; j < numBoxes; j++) {
+    baselineY += padding;
+    rect(width - offsetX + padding, baselineY, mainBoxWidth - (2 * padding), subBoxHeight);
+    baselineY += subBoxHeight;
+  }
+}
+
+void keyPressed() {
+  switch (key) {
+    case 's':
+      saveRecording();
+      break;
+      
+    case 'l':
+      loadRecording();
+      break;
   }
 }

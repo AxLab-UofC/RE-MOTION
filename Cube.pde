@@ -166,14 +166,18 @@ class Cube {
   //Execute this code on double tap
   void onDoubleTap() {
     //println("Double Tap Detected!");
+    sync.tapAdd(id);
     
     //insert code here
   }
   
   //Execute this code on motor response
   void onMotorResponse(int control, int response) {
-    //println("Motor Target Response!");
-    ready = true;
+    println("Motor Target Response!");
+    if (response == 0) {
+      ready = true;
+    }
+    
     
     //insert code here
   }
