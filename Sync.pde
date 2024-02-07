@@ -45,26 +45,28 @@ class SyncSystem {
       int index = indexOf(tappedSet.get(i));
       allUnsynced = allUnsynced && (index == -1);
       if (index > max) max = index;
-      if (index < min) min = index;
+      if (index < min && index != -1) min = index;
       if (!tappedSyncSets.contains(index)) tappedSyncSets.add(index);
     }
     
-    //print(allUnsynced);
     if (allUnsynced) {
-      //println("All Unsynced!");
-      
       syncedSets.add(tappedSet);
       syncAdd(tappedSet);
-    } else if (tappedSyncSets.size() == 2 && tappedSyncSets.contains(-1)){
+    } else if (tappedSyncSets.size() > 1) {
       for (int i = 0; i < tappedSet.size(); i++) {
+        println(tappedSet.get(i), indexOf(tappedSet.get(i)));
         if (indexOf(tappedSet.get(i)) == -1) {
           syncedSets.get(max).add(tappedSet.get(i));
+        } else if (indexOf(tappedSet.get(i)) != max) {
+          int currGroup = indexOf(tappedSet.get(i));
+          for (int j = 0; j < syncedSets.get(currGroup).size(); j++) {
+            syncedSets.get(max).add(syncedSets.get(currGroup).get(j));
+          }
+          tappedSet.set(i, max);
+          syncedSets.remove(currGroup);
         }
-        syncAdd(syncedSets.get(max));
       }
-      println("max:", + max);
-    } else {
-      println(tappedSyncSets.size());
+      syncAdd(syncedSets.get(max));
     }
   }
   
@@ -88,9 +90,21 @@ class SyncSystem {
     if (unsynced.contains(id)) {
       cubes[id].record.startReady();
     } else {
-    //  for (int i = 0; i < synced.size(); i++) {
-    //    cubes[i].record.startReady();
-    //  }
+      LinkedList<Integer> synced = syncedSets.get(indexOf(id));
+      for (int i = 0; i < synced.size(); i++) {
+        cubes[synced.get(i)].record.startReady();
+      }
+    }
+  }
+  
+  void pause(int id) {
+    if (unsynced.contains(id)) {
+      cubes[id].record.pause();
+    } else {
+      LinkedList<Integer> synced = syncedSets.get(indexOf(id));
+      for (int i = 0; i < synced.size(); i++) {
+        cubes[synced.get(i)].record.pause();
+      }
     }
   }
   
@@ -100,16 +114,17 @@ class SyncSystem {
         cubes[id].record.startPlay();
       }
     } else  {
-    //  boolean ready = true;
-    //  for (int i = 0; i < synced.size(); i++) {
-    //    ready = ready && cubes[i].record.status == Status.READYING && cubes[i].ready;
-    //  }
+      boolean ready = true;
+      LinkedList<Integer> synced = syncedSets.get(indexOf(id));
+      for (int i = 0; i < synced.size(); i++) {
+        ready = ready && cubes[synced.get(i)].record.status == Status.READYING && cubes[synced.get(i)].ready;
+      }
       
-    //  if (ready) {
-    //    for (int i = 0; i < synced.size(); i++) {
-    //      cubes[i].record.startPlay();
-    //    }
-    //  }
+      if (ready) {
+        for (int i = 0; i < synced.size(); i++) {
+          cubes[synced.get(i)].record.startPlay();
+        }
+      }
     }
   }
   

@@ -151,7 +151,7 @@ class Cube {
       if (record.status == Status.PAUSED) {
         record.unpause();
       } else {
-        record.pause();
+        sync.pause(id);
       }
     }
     

@@ -28,6 +28,7 @@ class UI {
     push();
     for (int i = 0; i < sync.syncedSets.size(); i++) {
       int numBoxes = sync.syncedSets.get(i).size();
+      if (numBoxes == 0) continue;
       rect(width - offsetX, baselineY, mainBoxWidth, padding + (subBoxHeight + padding) * numBoxes);
       
       for (int j = 0; j < numBoxes; j++) {
