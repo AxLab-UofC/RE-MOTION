@@ -161,7 +161,7 @@ class recordManager {
       int delta = move2.timestamp - move1.timestamp;
       if (delta == 0) delta = 1;
       
-      return sqrt(pow(move2.x - move1.x, 2) + pow(move2.y - move1.y, 2)) / 3;
+      return sqrt(pow(move2.x - move1.x, 2) + pow(move2.y - move1.y, 2)) / 6;
     }
   }
   
@@ -174,11 +174,16 @@ class recordManager {
   }
 }
 
-void saveRecording() {
+void saveRecording(File selection) {
+  if (selection == null) {
+    ui.addMsg("Saving Failed.");
+    return;
+  }
+  
   Table table = new Table();
   
   table.addColumn("id");
-  table.addColumn("timeStamp");
+  table.addColumn("timestamp");
   table.addColumn("x");
   table.addColumn("y");
   
@@ -194,10 +199,16 @@ void saveRecording() {
   }
   
   saveTable(table, "data/toio.csv");
+  ui.addMsg("Recording Saved!");
 }
 
-void loadRecording() {
-  Table table = loadTable("toio.csv", "header");
+void loadRecording(File selection) {
+  if (selection == null) {
+    ui.addMsg("Loading Failed.");
+    return;
+  }
+  
+  Table table = loadTable(selection.getAbsolutePath(), "header");
   
   for (int i = 0; i < nCubes; i++) {
     cubes[i].record.isRecording = false;
@@ -207,8 +218,6 @@ void loadRecording() {
     cubes[i].record.moves = new LinkedList<Movement>();
   }
   
-   println(table.getRowCount() + " total rows in table");
-   println(table.getColumnCount());
 
   for (TableRow row : table.rows()) {
     int id = row.getInt("id");
@@ -220,6 +229,9 @@ void loadRecording() {
   }
   
   for (int i = 0; i < nCubes; i++) {
-    println(cubes[i].record.size());
+    if (cubes[i].record.moves.size() == 0) cubes[i].record.isRecording = true;
+    cubes[i].record.setLed();
   }
+
+  ui.addMsg("Recording Loaded!");
 }

@@ -20,7 +20,8 @@ float scale = 1.2;
 
 Cube[] cubes;
 SyncSystem sync;
-int nCubes = 9;
+UI ui = new UI();
+int nCubes = 4;
 
 //boolean isRecording = true;
 //Recorder recorder;
@@ -89,44 +90,17 @@ void draw() {
     }
   }
   
-  drawUI();
-}
-
-void drawUI() {
-  int offsetX = 230;
-  int baselineY = 45;
-  int mainBoxWidth = 200;
-  int subBoxHeight = 50;
-  int padding = 10;
-  int mainBoxes = 2;
-  int numBoxes = 4;
-  
-  for (int i = 0; i < mainBoxes; i++) {
-    rect(width - offsetX, baselineY, mainBoxWidth, padding + (subBoxHeight + padding) * numBoxes);
-    
-    for (int j = 0; j < numBoxes; j++) {
-      baselineY += padding;
-      rect(width - offsetX + padding, baselineY, mainBoxWidth - (2 * padding), subBoxHeight);
-      baselineY += subBoxHeight;
-    }
-    baselineY += 2 * padding;
-  }
-  
-  for (int j = 0; j < numBoxes; j++) {
-    baselineY += padding;
-    rect(width - offsetX + padding, baselineY, mainBoxWidth - (2 * padding), subBoxHeight);
-    baselineY += subBoxHeight;
-  }
+  ui.draw();
 }
 
 void keyPressed() {
   switch (key) {
     case 's':
-      saveRecording();
+      selectOutput("Select a file to write to:", "saveRecording");
       break;
       
     case 'l':
-      loadRecording();
+      selectInput("Select a file to process:", "loadRecording");
       break;
   }
 }

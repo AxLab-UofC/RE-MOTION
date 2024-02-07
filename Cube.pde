@@ -1,7 +1,9 @@
 class Cube {
   int id;
   boolean isActive;
+  boolean isConnected;
   long lastUpdate;
+  long lastMsg;
     
   // position
   int x;
@@ -173,11 +175,10 @@ class Cube {
   
   //Execute this code on motor response
   void onMotorResponse(int control, int response) {
-    println("Motor Target Response!");
+    //println("Motor Target Response!");
     if (response == 0) {
       ready = true;
     }
-    
     
     //insert code here
   }
