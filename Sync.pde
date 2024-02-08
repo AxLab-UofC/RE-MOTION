@@ -59,11 +59,10 @@ class SyncSystem {
           syncedSets.get(max).add(tappedSet.get(i));
         } else if (indexOf(tappedSet.get(i)) != max) {
           int currGroup = indexOf(tappedSet.get(i));
-          for (int j = 0; j < syncedSets.get(currGroup).size(); j++) {
-            syncedSets.get(max).add(syncedSets.get(currGroup).get(j));
+          while (syncedSets.get(currGroup).size() > 0) {
+            syncedSets.get(max).add(syncedSets.get(currGroup).get(0));
+            syncedSets.get(currGroup).remove(0);
           }
-          tappedSet.set(i, max);
-          syncedSets.remove(currGroup);
         }
       }
       syncAdd(syncedSets.get(max));

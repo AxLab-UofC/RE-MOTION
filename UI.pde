@@ -16,10 +16,33 @@ class UI {
   void drawBox(int baseline, int id) {
     int boxWidth = mainBoxWidth - (2 * padding);
     push();
+    strokeWeight(2);
     rect(width - offsetX + padding, baseline, boxWidth, subBoxHeight);
     fill(0);
     textSize(subBoxHeight * .75);
     text("toio " + id, width - offsetX + padding * 2, baseline + (subBoxHeight  * 3 / 4));
+    pop();
+    
+    if (cubes[id].record.size() == 0) return;
+    push();
+    stroke(0, 0);
+    float colorWidth = boxWidth / ((float) cubes[id].record.size());
+    for (int i = 0; i < cubes[id].record.size(); i++) {
+      fill(cubes[id].record.getVelColor(i));
+      rect(width - offsetX + padding + (i * colorWidth), baseline, colorWidth, 5);
+    }
+    fill(200, 150);
+    rect(width - offsetX + padding, baseline, colorWidth * cubes[id].record.currMove, 5);
+
+    fill(255);
+    float xBase = width - offsetX + padding + (colorWidth * cubes[id].record.currMove);
+    triangle(xBase, baseline, xBase + 3, baseline + 5, xBase - 3, baseline + 5);
+    pop();
+    
+    push();
+    fill(0, 0, 0, 0);
+    strokeWeight(2);
+    rect(width - offsetX + padding, baseline, boxWidth, subBoxHeight);
     pop();
   }
   
@@ -32,6 +55,8 @@ class UI {
       rect(width - offsetX, baselineY, mainBoxWidth, padding + (subBoxHeight + padding) * numBoxes);
       
       for (int j = 0; j < numBoxes; j++) {
+        int id = sync.syncedSets.get(i).get(j);
+        //if (!cubes[id].isConnected) return;
         baselineY += padding;
         drawBox(baselineY, sync.syncedSets.get(i).get(j));
         baselineY += subBoxHeight;

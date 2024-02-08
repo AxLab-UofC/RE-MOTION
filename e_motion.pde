@@ -21,11 +21,7 @@ float scale = 1.2;
 Cube[] cubes;
 SyncSystem sync;
 UI ui = new UI();
-int nCubes = 4;
-
-//boolean isRecording = true;
-//Recorder recorder;
-//Recording recording = new Recording();
+int nCubes = 5;
 
 void settings() {
   size( (int) (screenSize * scale) + 200, (int) (screenSize * scale), P2D);
@@ -58,9 +54,6 @@ void draw() {
   long now = System.currentTimeMillis();
   
   for (int i = 0; i < nCubes; i++) {
-    cubes[i].record.update();
-    cubes[i].checkActive(now);
-    
     for (int j = 0; j < cubes[i].record.size(); j++) {
       Movement move = cubes[i].record.getMove(j);
       push();
@@ -69,6 +62,11 @@ void draw() {
       circle(move.x * scale, move.y * scale, 10 * scale);
       pop();
     }
+  }
+  
+  for (int i = 0; i < nCubes; i++) {
+    cubes[i].record.update();
+    cubes[i].checkActive(now);
 
     if (cubes[i].isActive) {
       if (!cubes[i].record.isRecording) {
@@ -81,7 +79,6 @@ void draw() {
       translate(cubes[i].x * scale, cubes[i].y * scale);
       rect(-10, -10, 20* scale, 20 * scale);
       popMatrix();
-
     }
     
     if (cubes[i].buttonDown && millis() - cubes[i].lastPressed > 1000) { 

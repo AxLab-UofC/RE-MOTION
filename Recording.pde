@@ -198,7 +198,7 @@ void saveRecording(File selection) {
     }
   }
   
-  saveTable(table, "data/toio.csv");
+  saveTable(table, selection.getAbsolutePath() + ".csv");
   ui.addMsg("Recording Saved!");
 }
 
@@ -208,30 +208,34 @@ void loadRecording(File selection) {
     return;
   }
   
-  Table table = loadTable(selection.getAbsolutePath(), "header");
-  
-  for (int i = 0; i < nCubes; i++) {
-    cubes[i].record.isRecording = false;
-    cubes[i].record.status = Status.PAUSED;
+  try {
+    Table table = loadTable(selection.getAbsolutePath(), "header");
     
-    cubes[i].record.toioLoc = new int[]{0, 0};
-    cubes[i].record.moves = new LinkedList<Movement>();
-  }
-  
-
-  for (TableRow row : table.rows()) {
-    int id = row.getInt("id");
-    int timestamp = row.getInt("timestamp");
-    int x = row.getInt("x");
-    int y = row.getInt("y");
+    for (int i = 0; i < nCubes; i++) {
+      cubes[i].record.isRecording = false;
+      cubes[i].record.status = Status.PAUSED;
+      
+      cubes[i].record.toioLoc = new int[]{0, 0};
+      cubes[i].record.moves = new LinkedList<Movement>();
+    }
     
-    cubes[id].record.addMove(timestamp, x, y);
-  }
+    for (TableRow row : table.rows()) {
+      int id = row.getInt("id");
+      int timestamp = row.getInt("timestamp");
+      int x = row.getInt("x");
+      int y = row.getInt("y");
+      
+      cubes[id].record.addMove(timestamp, x, y);
+    }
+    
+    for (int i = 0; i < nCubes; i++) {
+      if (cubes[i].record.moves.size() == 0) cubes[i].record.isRecording = true;
+      cubes[i].record.setLed();
+    }
   
-  for (int i = 0; i < nCubes; i++) {
-    if (cubes[i].record.moves.size() == 0) cubes[i].record.isRecording = true;
-    cubes[i].record.setLed();
+    ui.addMsg("Recording Loaded!");
+  } catch (Exception e) {
+    ui.addMsg("Loading Failed.");
+    return;
   }
-
-  ui.addMsg("Recording Loaded!");
 }

@@ -64,6 +64,10 @@ class Cube {
     if (lastUpdate < now - 1500 && isActive) {
       isActive = false;
     }
+    
+    if (lastMsg < now - 1500 && isConnected) {
+      isConnected = false;
+    }
   }
   
     // Updates position values
@@ -76,6 +80,8 @@ class Cube {
     
     lastUpdate = System.currentTimeMillis();
     isActive = true;
+    lastMsg = System.currentTimeMillis();
+    isConnected = true;
   }
   
   // Updates battery values
@@ -100,6 +106,9 @@ class Cube {
      if (doubleTap) {
        onDoubleTap();
      }
+     
+     lastMsg = System.currentTimeMillis();
+    isConnected = true;
   }
   
   // Updates magnetic values 
@@ -111,6 +120,8 @@ class Cube {
     magz = upz;
     
     //insert code here
+     lastMsg = System.currentTimeMillis();
+    isConnected = true;
   }
   
   //Updates posture values (euler)
@@ -120,6 +131,8 @@ class Cube {
     yaw = upyaw;
     
     //insert code here
+     lastMsg = System.currentTimeMillis();
+    isConnected = true;
   }
   
   //Updates posture values (quaternion)
@@ -130,6 +143,8 @@ class Cube {
     qz = upz;
     
     //insert code here
+     lastMsg = System.currentTimeMillis();
+    isConnected = true;
   }
   
   
@@ -140,6 +155,8 @@ class Cube {
     lastPressed = millis();
     
     //insert code here
+     lastMsg = System.currentTimeMillis();
+    isConnected = true;
   }
   
   //Execute this code on button release
@@ -156,6 +173,8 @@ class Cube {
     }
     
     //insert code here
+     lastMsg = System.currentTimeMillis();
+    isConnected = true;
   }
   
   //Execute this code on collision
@@ -163,6 +182,8 @@ class Cube {
     //println("Collision Detected!");
     
     //insert code here
+     lastMsg = System.currentTimeMillis();
+    isConnected = true;
   }
   
   //Execute this code on double tap
@@ -171,6 +192,8 @@ class Cube {
     sync.tapAdd(id);
     
     //insert code here
+     lastMsg = System.currentTimeMillis();
+    isConnected = true;
   }
   
   //Execute this code on motor response
@@ -181,6 +204,8 @@ class Cube {
     }
     
     //insert code here
+     lastMsg = System.currentTimeMillis();
+    isConnected = true;
   }
   
   void motor(int leftSpeed,int rightSpeed) {
