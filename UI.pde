@@ -14,6 +14,7 @@ class UI {
   }
   
   void drawBox(int baseline, int id) {
+    int colorHeight = 10;
     int boxWidth = mainBoxWidth - (2 * padding);
     push();
     strokeWeight(2);
@@ -29,14 +30,14 @@ class UI {
     float colorWidth = boxWidth / ((float) cubes[id].record.size());
     for (int i = 0; i < cubes[id].record.size(); i++) {
       fill(cubes[id].record.getVelColor(i));
-      rect(width - offsetX + padding + (i * colorWidth), baseline, colorWidth, 5);
+      rect(width - offsetX + padding + (i * colorWidth), baseline, colorWidth, colorHeight);
     }
     fill(200, 150);
-    rect(width - offsetX + padding, baseline, colorWidth * cubes[id].record.currMove, 5);
+    rect(width - offsetX + padding, baseline, colorWidth * cubes[id].record.currMove, colorHeight);
 
     fill(255);
     float xBase = width - offsetX + padding + (colorWidth * cubes[id].record.currMove);
-    triangle(xBase, baseline, xBase + 3, baseline + 5, xBase - 3, baseline + 5);
+    triangle(xBase, baseline, xBase + 3, baseline + colorHeight, xBase - 3, baseline + colorHeight);
     pop();
     
     push();
