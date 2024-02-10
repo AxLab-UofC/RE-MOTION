@@ -6,11 +6,13 @@ class Movement {
   int timestamp;
   int x;
   int y;
+  int theta;
   
-  Movement(int t, int xloc, int yloc) {
+  Movement(int t, int xloc, int yloc, int thetaloc) {
     timestamp = t;
     x = xloc;
     y = yloc;
+    theta = thetaloc;
   }
 }
 
@@ -137,14 +139,14 @@ class recordManager {
     }
   }
   
-  void addMove(int x, int y) {
+  void addMove(int x, int y, int theta) {
     if (status == Status.RECORDING) {
-      addMove(millis() - startTime, x, y);
+      addMove(millis() - startTime, x, y, theta);
     }
   }
   
-  void addMove(int t, int x, int y) {
-    moves.add(new Movement(t, x, y));
+  void addMove(int t, int x, int y, int theta) {
+    moves.add(new Movement(t, x, y, theta));
     if (toioLoc[0] == 0 && toioLoc[1] == 0) toioLoc = new int[]{x, y};
   }
   
@@ -214,6 +216,7 @@ void saveRecording(File selection) {
       newRow.setInt("timestamp", move.timestamp);
       newRow.setInt("x", move.x);
       newRow.setInt("y", move.y);
+      newRow.setInt("theta", move.theta);
     }
   }
   
@@ -226,7 +229,10 @@ void saveRecording(File selection) {
     }
   }
   
-  saveTable(table, selection.getAbsolutePath() + ".csv");
+  String name = selection.getAbsolutePath();
+  println(name.substring(name.length() - 4));
+  if (name.substring(name.length() - 4) == ".csv") saveTable(table, selection.getAbsolutePath());
+  else saveTable(table, selection.getAbsolutePath() + ".csv");
   ui.addMsg("Recording Saved!");
 }
 
@@ -238,7 +244,8 @@ void loadRecording(File selection) {
   
   try {
     Table table = loadTable(selection.getAbsolutePath(), "header");
-    
+    sync.syncedSets = new LinkedList<>();
+     
     for (int i = 0; i < nCubes; i++) {
       cubes[i].record.isRecording = false;
       cubes[i].record.status = Status.PAUSED;
@@ -253,8 +260,21 @@ void loadRecording(File selection) {
         int timestamp = row.getInt("timestamp");
         int x = row.getInt("x");
         int y = row.getInt("y");
+        int theta = row.getInt("theta");
         
-        cubes[id].record.addMove(timestamp, x, y);
+        cubes[id].record.addMove(timestamp, x, y, theta);
+      } else {
+        int syncGroup = row.getInt("syncgroup");
+        int id = row.getInt("id");
+        
+        if (syncGroup + 1> sync.syncedSets.size()) {
+          while(syncGroup + 1 > sync.syncedSets.size()) {
+            sync.syncedSets.add(new LinkedList<>());
+          }
+        }
+        
+        sync.syncedSets.get(syncGroup).add(id);
+        if (sync.unsynced.contains(id)) sync.unsynced.remove(sync.unsynced.indexOf(id));
       }
     }
     

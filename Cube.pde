@@ -76,7 +76,7 @@ class Cube {
     y = upy;
     theta = uptheta; 
     
-    record.addMove(x, y);
+    record.addMove(x, y, theta);
     
     lastUpdate = System.currentTimeMillis();
     isActive = true;
