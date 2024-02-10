@@ -32,7 +32,7 @@ class recordManager {
     isRecording = true;
     status = Status.PAUSED;
     
-    toioLoc = new int[]{0, 0};
+    toioLoc = new int[]{0, 0, 0};
     moves = new LinkedList<Movement>();
   }
   
@@ -80,8 +80,8 @@ class recordManager {
   }
   
   void restart() {
-    if (moves.size() > 0) toioLoc = new int[]{moves.get(0).x, moves.get(0).y};
-    else toioLoc = new int[]{0, 0};
+    if (moves.size() > 0) toioLoc = new int[]{moves.get(0).x, moves.get(0).y, moves.get(0).theta};
+    else toioLoc = new int[]{0, 0, 0};
     
     currMove = 0;
     timeElapsed = 0;
@@ -90,7 +90,7 @@ class recordManager {
   void startRecording() {
     startTime = millis();
     status = Status.RECORDING;
-    toioLoc = new int[]{0, 0};
+    toioLoc = new int[]{0, 0, 0};
     moves = new LinkedList<Movement>();
   }
   
@@ -98,7 +98,7 @@ class recordManager {
     isRecording = false;
     restart();
     status = Status.READYING;
-    cubes[id].target(0, toioLoc[0], toioLoc[1], 0);
+    cubes[id].target(0, toioLoc[0], toioLoc[1], toioLoc[2]);
     setLed();
   }
   
@@ -127,7 +127,7 @@ class recordManager {
         if (currMove > moves.size()) startReady();
         
         while (moves.get(currMove).timestamp < currTime) {
-          toioLoc = new int[]{moves.get(currMove).x, moves.get(currMove).y};
+          toioLoc = new int[]{moves.get(currMove).x, moves.get(currMove).y, moves.get(currMove).theta};
           currMove++;
           if (currMove >= moves.size()) {
             startReady();
@@ -149,7 +149,7 @@ class recordManager {
   
   void addMove(int t, int x, int y, int theta) {
     moves.add(new Movement(t, x, y, theta));
-    if (toioLoc[0] == 0 && toioLoc[1] == 0) toioLoc = new int[]{x, y};
+    if (toioLoc[0] == 0 && toioLoc[1] == 0) toioLoc = new int[]{x, y, theta};
   }
   
   Movement getMove(int i) {
@@ -251,7 +251,7 @@ void loadRecording(File selection) {
       cubes[i].record.isRecording = false;
       cubes[i].record.status = Status.PAUSED;
       
-      cubes[i].record.toioLoc = new int[]{0, 0};
+      cubes[i].record.toioLoc = new int[]{0, 0, 0};
       cubes[i].record.moves = new LinkedList<Movement>();
     }
     
