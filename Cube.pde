@@ -239,6 +239,19 @@ class Cube {
     return val;
   }
   
+  boolean velocityTargetAngle(int x, int y, int theta) {
+    float elapsedTime = millis() - targetTime;
+    float vx = (targetx - x) / elapsedTime;
+    float vy = (targety - y) / elapsedTime;
+    
+    boolean val = motorTargetVelocityAngle(id, x, y, vx, vy, theta);
+    
+    targetx = x;
+    targety = y;
+    targetTime = millis();
+    return val;
+  }
+  
   void accelerate(int speed, int a, int rotateVelocity, int rotateDir, int dir, int priority, int duration) {
     motorAcceleration(id, speed, a, rotateVelocity, rotateDir, dir, priority, duration);
   }

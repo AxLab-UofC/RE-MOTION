@@ -33,6 +33,13 @@ UI ui = new UI();
 PImage axlab;
 PImage remotion;
 
+//for new Mac OS, in Processing, if your window won’t pop up after hitting compile, copy and paste below code before setup()
+import com.jogamp.opengl.GLProfile;
+{
+  GLProfile.initSingleton();
+}
+
+
 void settings() {
   size( (int) (screenSize * scale) + 200, (int) (screenSize * scale) + 50, P2D);
 }
@@ -43,7 +50,7 @@ void setup() {
   server = new NetAddress[1];
   server[0] = new NetAddress("127.0.0.1", 3334);
   sync = new SyncSystem();
-  
+
   cubes = new Cube[nCubes];
   for (int i = 0; i < nCubes; i++) {
     cubes[i] = new Cube(i);
@@ -58,21 +65,21 @@ void draw() {
   background(200);
   image(remotion, 45, 25, remotion.width/6, remotion.height/6);
   float scaleFactor = (remotion.height/5.5) / (float) axlab.height;
-  
-  image(axlab, width - 45 - (axlab.width * scaleFactor), 25,  axlab.width * scaleFactor, axlab.height * scaleFactor);
-  
-  
+
+  image(axlab, width - 45 - (axlab.width * scaleFactor), 25, axlab.width * scaleFactor, axlab.height * scaleFactor);
+
+
   push();
   translate(0, 50);
   fill(255);
-  
+
   //image(img, 0, 0, width/2, height/2);
   rect(45, 45, 410 * scale, 410 * scale);
-  
+
   sync.update();
   long now = System.currentTimeMillis();
-  
-  
+
+
   for (int i = 0; i < nCubes; i++) {
     for (int j = 0; j < cubes[i].record.size(); j++) {
       Movement move = cubes[i].record.getMove(j);
@@ -83,7 +90,7 @@ void draw() {
       pop();
     }
   }
-  
+
   for (int i = 0; i < nCubes; i++) {
     cubes[i].record.update();
     cubes[i].checkActive(now);
@@ -94,32 +101,35 @@ void draw() {
         line(cubes[i].x * scale, cubes[i].y * scale, toioLoc[0] * scale, toioLoc[1] * scale);
         circle(toioLoc[0] * scale, toioLoc[1] * scale, 20);
       }
-      
+
       pushMatrix();
       translate(cubes[i].x * scale, cubes[i].y * scale);
-      rect(-10, -10, 20* scale, 20 * scale);
+      rotate(radians(cubes[i].theta));
+
+      rect(-(20* scale)/2, -(20* scale)/2, 20* scale, 20 * scale);
+      line(0,0,(20* scale)/2,0);
       popMatrix();
     }
-    
-    if (cubes[i].buttonDown && millis() - cubes[i].lastPressed > 1000) { 
+
+    if (cubes[i].buttonDown && millis() - cubes[i].lastPressed > 1000) {
       cubes[i].record.changeMode();
       cubes[i].buttonDown = false;
     }
   }
-  
+
   ui.draw();
   pop();
 }
 
 void keyPressed() {
   switch (key) {
-    case 's':
-      selectOutput("Select a file to write to:", "saveRecording");
-      break;
-      
-    case 'l':
-      selectInput("Select a file to process:", "loadRecording");
-      break;
+  case 's':
+    selectOutput("Select a file to write to:", "saveRecording");
+    break;
+
+  case 'l':
+    selectInput("Select a file to process:", "loadRecording");
+    break;
   }
 }
 

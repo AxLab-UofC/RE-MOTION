@@ -109,6 +109,8 @@ class recordManager {
   
   void execute() {
     cubes[id].velocityTarget(toioLoc[0], toioLoc[1]);
+    
+    // cubes[id].velocityTargetAngle(toioLoc[0], toioLoc[1]);
   }
   
   void update() {
