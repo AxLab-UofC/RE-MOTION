@@ -22,9 +22,11 @@ Cube[] cubes;
 SyncSystem sync;
 UI ui = new UI();
 int nCubes = 5;
+PImage axlab;
+PImage remotion;
 
 void settings() {
-  size( (int) (screenSize * scale) + 200, (int) (screenSize * scale), P2D);
+  size( (int) (screenSize * scale) + 200, (int) (screenSize * scale) + 50, P2D);
 }
 
 void setup() {
@@ -39,19 +41,29 @@ void setup() {
     cubes[i] = new Cube(i);
     cubes[i].led(0, 255, 0, 0);
   }
-  
+  axlab = loadImage("axlab.png");
+  remotion = loadImage("remotion.png");
   frameRate(60);
 }
 
 void draw() {
   background(200);
+  image(remotion, 45, 25, remotion.width/6, remotion.height/6);
+  float scaleFactor = (remotion.height/5.5) / (float) axlab.height;
+  
+  image(axlab, width - 45 - (axlab.width * scaleFactor), 25,  axlab.width * scaleFactor, axlab.height * scaleFactor);
+  
+  
   push();
-  fill(225);
+  translate(0, 50);
+  fill(255);
+  
+  //image(img, 0, 0, width/2, height/2);
   rect(45, 45, 410 * scale, 410 * scale);
-  pop();
   
   sync.update();
   long now = System.currentTimeMillis();
+  
   
   for (int i = 0; i < nCubes; i++) {
     for (int j = 0; j < cubes[i].record.size(); j++) {
@@ -88,6 +100,7 @@ void draw() {
   }
   
   ui.draw();
+  pop();
 }
 
 void keyPressed() {

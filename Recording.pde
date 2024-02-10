@@ -172,6 +172,21 @@ class recordManager {
     if (v < .5) return color(lerp(183, 252, v * 2), lerp(225, 232, v * 2), lerp(205, 178, v * 2));
     else return color(lerp(252, 244, (v - .5) * 2), lerp(232, 199, (v - .5) * 2), lerp(178, 195, (v - .5) * 2));
   }
+  
+  String getStatus() {
+    switch(status) {
+      case RECORDING:
+        return "RECORDING";
+        
+      case PLAY:
+        return "PLAY";
+        
+      case READYING:
+        return "READYING";
+       
+      default: return "STANDBY";
+    }
+  }
 }
 
 void saveRecording(File selection) {
@@ -182,19 +197,32 @@ void saveRecording(File selection) {
   
   Table table = new Table();
   
+  table.addColumn("datatype");
+  table.addColumn("syncgroup");
   table.addColumn("id");
   table.addColumn("timestamp");
   table.addColumn("x");
   table.addColumn("y");
+  table.addColumn("theta");
   
   for (int i = 0; i < nCubes; i++) {
     for (int j = 0; j < cubes[i].record.size(); j++) {
       Movement move = cubes[i].record.getMove(j);
       TableRow newRow = table.addRow();
+      newRow.setInt("datatype", 0);
       newRow.setInt("id", i);
       newRow.setInt("timestamp", move.timestamp);
       newRow.setInt("x", move.x);
       newRow.setInt("y", move.y);
+    }
+  }
+  
+  for (int i = 0; i <  sync.syncedSets.size(); i++) {
+    for (int j = 0; j < sync.syncedSets.get(i).size(); j++) {
+      TableRow newRow = table.addRow();
+      newRow.setInt("datatype", 1);
+      newRow.setInt("syncgroup", i);
+      newRow.setInt("id", j);
     }
   }
   
@@ -220,12 +248,14 @@ void loadRecording(File selection) {
     }
     
     for (TableRow row : table.rows()) {
-      int id = row.getInt("id");
-      int timestamp = row.getInt("timestamp");
-      int x = row.getInt("x");
-      int y = row.getInt("y");
-      
-      cubes[id].record.addMove(timestamp, x, y);
+      if (row.getInt("datatype") == 0) {
+        int id = row.getInt("id");
+        int timestamp = row.getInt("timestamp");
+        int x = row.getInt("x");
+        int y = row.getInt("y");
+        
+        cubes[id].record.addMove(timestamp, x, y);
+      }
     }
     
     for (int i = 0; i < nCubes; i++) {

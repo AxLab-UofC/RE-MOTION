@@ -97,7 +97,7 @@ class SyncSystem {
   }
   
   void pause(int id) {
-    if (unsynced.contains(id)) {
+    if (unsynced.contains(id) || cubes[id].record.status == Status.RECORDING) {
       cubes[id].record.pause();
     } else {
       LinkedList<Integer> synced = syncedSets.get(indexOf(id));

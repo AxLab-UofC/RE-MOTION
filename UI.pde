@@ -4,7 +4,9 @@ class UI {
   int mainBoxWidth = 200;
   int subBoxHeight = 50;
   int padding = 10;
-  
+  int boxWidth = mainBoxWidth - (2 * padding);
+  float buttonSize = subBoxHeight - (padding * 2.5);
+  int colorHeight = 10;
   int textPadding = 10;
   int textBoxHeight = 30;
   String msg = "Press 'S' to Save or 'L' to Load";
@@ -14,14 +16,17 @@ class UI {
   }
   
   void drawBox(int baseline, int id) {
-    int colorHeight = 10;
-    int boxWidth = mainBoxWidth - (2 * padding);
     push();
     strokeWeight(2);
-    rect(width - offsetX + padding, baseline, boxWidth, subBoxHeight);
+    rect(width - offsetX + padding, baseline, boxWidth, subBoxHeight + (1.5 * padding));
+
     fill(0);
     textSize(subBoxHeight * .75);
     text("toio " + id, width - offsetX + padding * 2, baseline + (subBoxHeight  * 3 / 4));
+    textSize(subBoxHeight * .3);
+    if (cubes[id].record.isRecording) fill(255, 50, 50);
+    else fill(50, 150, 50);
+    text(cubes[id].record.getStatus(), width - offsetX + padding * 2, baseline + (subBoxHeight * 1.1));
     pop();
     
     if (cubes[id].record.size() == 0) return;
@@ -32,8 +37,6 @@ class UI {
       fill(cubes[id].record.getVelColor(i));
       rect(width - offsetX + padding + (i * colorWidth), baseline, colorWidth, colorHeight);
     }
-    fill(200, 150);
-    rect(width - offsetX + padding, baseline, colorWidth * cubes[id].record.currMove, colorHeight);
 
     fill(255);
     float xBase = width - offsetX + padding + (colorWidth * cubes[id].record.currMove);
@@ -43,7 +46,21 @@ class UI {
     push();
     fill(0, 0, 0, 0);
     strokeWeight(2);
-    rect(width - offsetX + padding, baseline, boxWidth, subBoxHeight);
+    rect(width - offsetX + padding, baseline, boxWidth, subBoxHeight + (1.5 * padding));
+    pop();
+  }
+  
+  void drawButton(int baseline, int id) {
+    float xBase = width - offsetX + boxWidth - buttonSize;
+    float yBase = baseline + (padding * 1.5);
+    float buttonPadding = padding * .75;
+    push();
+    fill(200);
+    square(xBase, yBase, buttonSize);
+    stroke(255);
+    strokeWeight(3);
+    line(xBase + buttonPadding, yBase + buttonPadding, xBase + buttonSize - buttonPadding, yBase + buttonSize - buttonPadding);
+    line(xBase + buttonPadding, yBase + buttonSize - buttonPadding, xBase + buttonSize - buttonPadding, yBase + buttonPadding);
     pop();
   }
   
@@ -53,22 +70,21 @@ class UI {
     for (int i = 0; i < sync.syncedSets.size(); i++) {
       int numBoxes = sync.syncedSets.get(i).size();
       if (numBoxes == 0) continue;
-      rect(width - offsetX, baselineY, mainBoxWidth, padding + (subBoxHeight + padding) * numBoxes);
+      rect(width - offsetX, baselineY, mainBoxWidth, padding + ((subBoxHeight + (2.5 * padding)) * numBoxes));
       
       for (int j = 0; j < numBoxes; j++) {
-        int id = sync.syncedSets.get(i).get(j);
-        //if (!cubes[id].isConnected) return;
         baselineY += padding;
         drawBox(baselineY, sync.syncedSets.get(i).get(j));
-        baselineY += subBoxHeight;
+        drawButton(baselineY, sync.unsynced.get(i));
+        baselineY += subBoxHeight + (1.5 * padding);
       }
-      baselineY += 2 * padding;
+      baselineY += padding;
     }
     
     for (int i = 0; i < sync.unsynced.size(); i++) {
       baselineY += padding;
       drawBox(baselineY, sync.unsynced.get(i));
-      baselineY += subBoxHeight;
+      baselineY += subBoxHeight + (1.5 * padding);
     }
     pop();
   }
