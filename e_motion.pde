@@ -2,12 +2,19 @@ import java.util.*;
 import oscP5.*;
 import netP5.*;
 
+// for new Mac OS, in Processing, if your window won't pop up after hitting compile, copy and paste below code before setup()
+import com.jogamp.opengl.GLProfile;
+{
+  GLProfile.initSingleton();
+}
+
 
 //constants
 //The soft limit on how many toios a laptop can handle is in the 10-12 range
 //the more toios you connect to, the more difficult it becomes to sustain the connection
 //int nCubes = 12;
-int cubesPerHost = 12;
+int nCubes = 5;
+int cubesPerHost = nCubes;
 
 
 //for OSC
@@ -21,7 +28,8 @@ float scale = 1.2;
 Cube[] cubes;
 SyncSystem sync;
 UI ui = new UI();
-int nCubes = 5;
+
+
 PImage axlab;
 PImage remotion;
 
@@ -113,4 +121,12 @@ void keyPressed() {
       selectInput("Select a file to process:", "loadRecording");
       break;
   }
+}
+
+void mouseMoved() {
+  ui.checkButtons(mouseX, mouseY);
+}
+
+void mousePressed() {
+  ui.checkButtons(mouseX, mouseY);
 }

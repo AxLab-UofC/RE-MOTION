@@ -35,6 +35,16 @@ class SyncSystem {
     }
   }
   
+  void syncRemove(int id) {
+    if (unsynced.contains(id)) return;
+    unsynced.add(id);
+    int set = indexOf(id);
+    syncedSets.get(set).remove(syncedSets.get(set).indexOf(id));
+    cubes[id].led(50, 0, 0, 255);
+    cubes[id].midi(20, 35, 255);
+    cubes[id].record.setLed();
+  }
+  
   void updateSyncSet(LinkedList<Integer> tappedSet) {
     LinkedList<Integer> tappedSyncSets = new LinkedList<>();
     boolean allUnsynced = true;
@@ -54,7 +64,6 @@ class SyncSystem {
       syncAdd(tappedSet);
     } else if (tappedSyncSets.size() > 1) {
       for (int i = 0; i < tappedSet.size(); i++) {
-        println(tappedSet.get(i), indexOf(tappedSet.get(i)));
         if (indexOf(tappedSet.get(i)) == -1) {
           syncedSets.get(max).add(tappedSet.get(i));
         } else if (indexOf(tappedSet.get(i)) != max) {

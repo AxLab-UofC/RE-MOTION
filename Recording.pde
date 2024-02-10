@@ -230,9 +230,8 @@ void saveRecording(File selection) {
   }
   
   String name = selection.getAbsolutePath();
-  println(name.substring(name.length() - 4));
   if (name.substring(name.length() - 4) == ".csv") saveTable(table, selection.getAbsolutePath());
-  else saveTable(table, selection.getAbsolutePath() + ".csv");
+  else saveTable(table, name + ".csv");
   ui.addMsg("Recording Saved!");
 }
 

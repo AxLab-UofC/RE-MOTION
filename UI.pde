@@ -12,6 +12,8 @@ class UI {
   String msg = "Press 'S' to Save or 'L' to Load";
   int msgUpdate = 0;
   
+  int[][] buttons;
+  
   UI() {
   }
   
@@ -75,11 +77,13 @@ class UI {
       for (int j = 0; j < numBoxes; j++) {
         baselineY += padding;
         drawBox(baselineY, sync.syncedSets.get(i).get(j));
-        drawButton(baselineY, sync.unsynced.get(i));
+        drawButton(baselineY, sync.syncedSets.get(i).get(j));
         baselineY += subBoxHeight + (1.5 * padding);
       }
-      baselineY += padding;
+      baselineY += 2 * padding;
     }
+    
+    baselineY -= padding;
     
     for (int i = 0; i < sync.unsynced.size(); i++) {
       baselineY += padding;
@@ -87,6 +91,35 @@ class UI {
       baselineY += subBoxHeight + (1.5 * padding);
     }
     pop();
+  }
+  
+  void pressButton(int set, int id) {
+    sync.syncRemove(id);
+    
+    if (sync.syncedSets.get(set).size() == 1) {
+      sync.unsynced.add(sync.syncedSets.get(set).get(0));
+      sync.syncedSets.get(set).remove(0);
+    }
+  }
+  
+  void checkButtons(int x, int y) {
+    int baselineY = offsetY;
+    float xBase = width - offsetX + boxWidth - buttonSize;
+    for (int i = 0; i < sync.syncedSets.size(); i++) {
+      int numBoxes = sync.syncedSets.get(i).size();
+      if (numBoxes == 0) continue;
+      
+      for (int j = 0; j < numBoxes; j++) {
+        baselineY += padding;
+        float yBase = baselineY + (padding * 1.5);
+        if (x >= xBase && y >= yBase && x <= xBase + buttonSize && y <= yBase + buttonSize) {
+          println(i, sync.syncedSets.get(i).get(j));
+          pressButton(i, sync.syncedSets.get(i).get(j));
+        } 
+        baselineY += subBoxHeight + (1.5 * padding);
+      }
+      baselineY += 2 * padding;
+    }
   }
   
   void drawmsg() {
