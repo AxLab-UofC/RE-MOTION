@@ -103,7 +103,7 @@ class UI {
   }
   
   void checkButtons(int x, int y) {
-    int baselineY = offsetY;
+    int baselineY = offsetY + 45;
     float xBase = width - offsetX + boxWidth - buttonSize;
     for (int i = 0; i < sync.syncedSets.size(); i++) {
       int numBoxes = sync.syncedSets.get(i).size();

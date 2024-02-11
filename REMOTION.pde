@@ -16,7 +16,11 @@ import com.jogamp.opengl.GLProfile;
 int nCubes = 5;
 int cubesPerHost = nCubes;
 
+<<<<<<< Updated upstream
 boolean AngleControlMode = true; // AngleControlMode is experimental, turn this to false, to remove angle to be targetted.
+=======
+boolean debug = true;
+>>>>>>> Stashed changes
 
 
 //for OSC
@@ -35,7 +39,7 @@ UI ui = new UI();
 PImage axlab;
 PImage remotion;
 
-//for new Mac OS, in Processing, if your window won’t pop up after hitting compile, copy and paste below code before setup()
+//for new Mac OS, in Processing, if your window won't pop up after hitting compile, copy and paste below code before setup()
 import com.jogamp.opengl.GLProfile;
 {
   GLProfile.initSingleton();
@@ -155,11 +159,16 @@ void keyPressed() {
   case 'l':
     selectInput("Select a file to process:", "loadRecording");
     break;
+    
+  case 'd':
+    debug = !debug;
+    if (!debug) {
+      for (int i = 0; i < nCubes; i++) {
+        cubes[i].led(0, 0, 0, 0);
+      }
+    }
+    break;
   }
-}
-
-void mouseMoved() {
-  ui.checkButtons(mouseX, mouseY);
 }
 
 void mousePressed() {

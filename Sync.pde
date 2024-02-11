@@ -20,8 +20,11 @@ class SyncSystem {
   
   void syncAdd(int id) {
     if (unsynced.contains(id)) unsynced.remove(unsynced.indexOf(id));
-    cubes[id].led(50, 0, 0, 255);
-    cubes[id].midi(20, 40, 255);
+    if (debug) {
+      cubes[id].led(50, 0, 0, 255);
+      cubes[id].midi(20, 40, 255);
+    }
+
     cubes[id].record.setLed();
   }
   
@@ -29,8 +32,11 @@ class SyncSystem {
     for (int i = 0; i < set.size(); i++) {
       int id = set.get(i);
       if (unsynced.contains(id)) unsynced.remove(unsynced.indexOf(id));
-      cubes[id].led(50, 0, 0, 255);
-      cubes[id].midi(20, 40, 255);
+      
+      if (debug) {
+        cubes[id].led(50, 0, 0, 255);
+        cubes[id].midi(20, 40, 255);
+      }
       cubes[id].record.setLed();
     }
   }
@@ -40,8 +46,11 @@ class SyncSystem {
     unsynced.add(id);
     int set = indexOf(id);
     syncedSets.get(set).remove(syncedSets.get(set).indexOf(id));
-    cubes[id].led(50, 0, 0, 255);
-    cubes[id].midi(20, 35, 255);
+    
+    if (debug) {
+      cubes[id].led(50, 0, 0, 255);
+      cubes[id].midi(20, 35, 255);
+    }
     cubes[id].record.setLed();
   }
   
