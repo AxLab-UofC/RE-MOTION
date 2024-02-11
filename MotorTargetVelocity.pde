@@ -89,8 +89,6 @@ boolean motorTargetVelocityAngle(int id, int x, int y, float vx, float vy, int t
 
 
   if (cubes[id].isActive) {
-    /////previously defined as .aim
-
 
 
     // calculate to judge if rotation needed
@@ -100,15 +98,20 @@ boolean motorTargetVelocityAngle(int id, int x, int y, float vx, float vy, int t
     if (diffAngle_ > PI) diffAngle_ -= TWO_PI;
     if (diffAngle_ < -PI) diffAngle_ += TWO_PI;
 
+    float accumulatedVel = sqrt(sq(vx)+sq(vy));
+    float disToTarget = cubes[id].distance(x,y);
+    float degDiffAngle_ = degrees(diffAngle_);
+    
+   // println("accumu: " + accumulatedVel + ", disTo Target: " + disToTarget + " degDiffAngle_: " + degDiffAngle_);
 
-    if (sqrt(sq(vx)+sq(vy)) > 10 || cubes[id].distance(x, y) > 20) { // if distance to target and and target velocity is high
+    if (accumulatedVel > 10 || disToTarget > 10) { // if distance to target and and target velocity is high do the velocity target
 
       int left = 0;
       int right = 0;
       float angleToTarget = atan2(y-cubes[id].y, x-cubes[id].x);
 
       float thisAngle = cubes[id].theta*PI/180;
-      float diffAngle = thisAngle-angleToTarget;
+      float diffAngle = thisAngle-angleToTarget; //diffAngle_; // modified this? Ken
       if (diffAngle > PI) diffAngle -= TWO_PI;
       if (diffAngle < -PI) diffAngle += TWO_PI;
 
@@ -176,18 +179,19 @@ boolean motorTargetVelocityAngle(int id, int x, int y, float vx, float vy, int t
       //println("motor command:", id, left_, right_);
 
       cubes[id].motor((int)left_, (int)right_, duration);
-    } else if (abs(diffAngle_)>10) { // Rotate Mode
+    } else if (abs(degDiffAngle_)>10) { // Rotate Mode
 
       float rotateSpeed;
-      if (diffAngle_>10) {
-        rotateSpeed = constrain(map(diffAngle_, 10, 150, 10, 115), 10.0, 115.0);
+      int maxRotSpeed = 115;
+      if (degDiffAngle_>10) {
+        rotateSpeed = constrain(map(degDiffAngle_, 10, 150, 10, maxRotSpeed), 10.0, maxRotSpeed);
       } else {
-        rotateSpeed = constrain(map(diffAngle_, -10, -150, 10, -115), -10.0, -115.0);
+        rotateSpeed = constrain(map(degDiffAngle_, -10, -150, -10, -maxRotSpeed), -10.0, -maxRotSpeed);
       }
 
 
 
-      cubes[id].motor((int)rotateSpeed, (int)rotateSpeed, 10);
+      cubes[id].motor((int)rotateSpeed, -(int)rotateSpeed, 10);
     }
   }
   return false;

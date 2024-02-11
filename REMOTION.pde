@@ -16,6 +16,8 @@ import com.jogamp.opengl.GLProfile;
 int nCubes = 5;
 int cubesPerHost = nCubes;
 
+boolean AngleControlMode = true; // AngleControlMode is experimental, turn this to false, to remove angle to be targetted.
+
 
 //for OSC
 OscP5 oscP5;
@@ -42,6 +44,9 @@ import com.jogamp.opengl.GLProfile;
 
 void settings() {
   size( (int) (screenSize * scale) + 200, (int) (screenSize * scale) + 50, P2D);
+  
+  smooth();
+
 }
 
 void setup() {
@@ -59,6 +64,7 @@ void setup() {
   axlab = loadImage("axlab.png");
   remotion = loadImage("remotion.png");
   frameRate(60);
+  
 }
 
 void draw() {
@@ -96,19 +102,38 @@ void draw() {
     cubes[i].checkActive(now);
 
     if (cubes[i].isActive) {
-      if (!cubes[i].record.isRecording) {
-        int[] toioLoc = new int[]{cubes[i].record.toioLoc[0], cubes[i].record.toioLoc[1]};
-        line(cubes[i].x * scale, cubes[i].y * scale, toioLoc[0] * scale, toioLoc[1] * scale);
-        circle(toioLoc[0] * scale, toioLoc[1] * scale, 20);
-      }
+
 
       pushMatrix();
       translate(cubes[i].x * scale, cubes[i].y * scale);
       rotate(radians(cubes[i].theta));
-
+      push();
+      strokeWeight(2);
+      stroke(0);
+      fill(255,50);
       rect(-(20* scale)/2, -(20* scale)/2, 20* scale, 20 * scale);
-      line(0,0,(20* scale)/2,0);
+      line(0, 0, (20* scale)/2, 0);
+      pop();
       popMatrix();
+
+      if (!cubes[i].record.isRecording) {
+        push();
+        int[] toioLoc = new int[]{cubes[i].record.toioLoc[0], cubes[i].record.toioLoc[1], cubes[i].record.toioLoc[2]};
+        stroke(150);
+        //strokeWeight(1);
+
+        line(cubes[i].x * scale, cubes[i].y * scale, toioLoc[0] * scale, toioLoc[1] * scale);
+
+        pushMatrix();
+        translate(toioLoc[0] * scale, toioLoc[1] * scale);
+        rotate(radians(toioLoc[2]));
+
+        noFill();
+        rect(-(20* scale)/2, -(20* scale)/2, 20* scale, 20 * scale);
+        line(0, 0, (20* scale)/2, 0);
+        popMatrix();
+        pop();
+      }
     }
 
     if (cubes[i].buttonDown && millis() - cubes[i].lastPressed > 1000) {
