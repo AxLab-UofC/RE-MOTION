@@ -56,13 +56,7 @@ class recordManager {
   void changeMode() {
     status = Status.PAUSED;
     isRecording = !isRecording;
-<<<<<<< Updated upstream
-
-    cubes[id].midi(10, 68, 255);
-=======
-    
     if (debug) cubes[id].midi(10, 68, 255);
->>>>>>> Stashed changes
     setLed();
   }
 
@@ -72,25 +66,13 @@ class recordManager {
 
     if (isRecording) startRecording();
     else sync.startReady(id);
-<<<<<<< Updated upstream
-
-    cubes[id].midi(1, notes);
-=======
-    
     if (debug) cubes[id].midi(1, notes);
->>>>>>> Stashed changes
     setLed();
   }
 
   void pause() {
     int[][] notes = {{10, 64, 20}, {2, 0, 0}, {10, 63, 20}};
-<<<<<<< Updated upstream
-    cubes[id].midi(1, notes);
-
-=======
     if (debug) cubes[id].midi(1, notes);
-    
->>>>>>> Stashed changes
     status = Status.PAUSED;
     setLed();
   }
@@ -124,15 +106,10 @@ class recordManager {
   }
 
   void execute() {
-<<<<<<< Updated upstream
     if (AngleControlMode) {
       cubes[id].velocityTargetAngle(toioLoc[0], toioLoc[1], toioLoc[2]);
     } else {
       cubes[id].velocityTarget(toioLoc[0], toioLoc[1]);
-=======
-    cubes[id].velocityTarget(toioLoc[0], toioLoc[1]);
-    
-    // cubes[id].velocityTargetAngle(toioLoc[0], toioLoc[1]);
   }
   
   void update() {
@@ -161,37 +138,9 @@ class recordManager {
         
        default:
          break;
->>>>>>> Stashed changes
     }
   }
 
-  void update() {
-    switch (status) {
-    case READYING:
-      sync.checkReady(id);
-      break;
-
-    case PLAY:
-      execute();
-
-      int currTime = millis() - startTime;
-
-      if (currMove > moves.size()) startReady();
-
-      while (moves.get(currMove).timestamp < currTime) {
-        toioLoc = new int[]{moves.get(currMove).x, moves.get(currMove).y, moves.get(currMove).theta};
-        currMove++;
-        if (currMove >= moves.size()) {
-          startReady();
-          break;
-        }
-      }
-      break;
-
-    default:
-      break;
-    }
-  }
 
   void addMove(int x, int y, int theta) {
     if (status == Status.RECORDING) {

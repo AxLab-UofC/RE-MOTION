@@ -12,8 +12,6 @@ class UI {
   String msg = "Press 'S' to Save or 'L' to Load";
   int msgUpdate = 0;
   
-  int[][] buttons;
-  
   UI() {
   }
   

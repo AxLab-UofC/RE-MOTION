@@ -16,11 +16,8 @@ import com.jogamp.opengl.GLProfile;
 int nCubes = 5;
 int cubesPerHost = nCubes;
 
-<<<<<<< Updated upstream
 boolean AngleControlMode = true; // AngleControlMode is experimental, turn this to false, to remove angle to be targetted.
-=======
 boolean debug = true;
->>>>>>> Stashed changes
 
 
 //for OSC
