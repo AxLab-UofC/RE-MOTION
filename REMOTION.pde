@@ -13,7 +13,7 @@ import com.jogamp.opengl.GLProfile;
 //The soft limit on how many toios a laptop can handle is in the 10-12 range
 //the more toios you connect to, the more difficult it becomes to sustain the connection
 //int nCubes = 12;
-int nCubes = 5;
+int nCubes = 4;
 int cubesPerHost = nCubes;
 
 boolean AngleControlMode = true; // AngleControlMode is experimental, turn this to false, to remove angle to be targetted.
@@ -44,7 +44,8 @@ import com.jogamp.opengl.GLProfile;
 
 
 void settings() {
-  size( (int) (screenSize * scale) + 200, (int) (screenSize * scale) + 50, P2D);
+  size( (int) (screenSize * scale) + 200, (int) (screenSize * scale) + 200, P2D);
+  //fullScreen();
   
   smooth();
 

@@ -57,6 +57,7 @@ class recordManager {
     status = Status.PAUSED;
     isRecording = !isRecording;
     if (debug) cubes[id].midi(10, 68, 255);
+    if (!isRecording) sync.startReady(id);
     setLed();
   }
 

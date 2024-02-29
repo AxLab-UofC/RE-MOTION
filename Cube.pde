@@ -9,12 +9,16 @@ class Cube {
   int x;
   int y;
   int theta;
+
+  //targeting
+  int targetx;
+  int targety;
   boolean ready;
   
   //velocity targeting
-  int targetx;
-  int targety;
-  int targetTime;
+  int velocityx;
+  int velocityy;
+  int velocityTime;
   
   // battery
   int battery;
@@ -201,6 +205,8 @@ class Cube {
     //println("Motor Target Response!");
     if (response == 0) {
       ready = true;
+    } else {
+      target(0, targetx, targety, 0);
     }
     
     //insert code here
@@ -217,6 +223,8 @@ class Cube {
   }
   
   void target(int mode, int x, int y, int theta) {
+    targetx = x;
+    targety = y;
     motorTarget(id, mode, x, y, theta);
     ready = false;
   }
@@ -227,28 +235,28 @@ class Cube {
   }
   
   boolean velocityTarget(int x, int y) {
-    float elapsedTime = millis() - targetTime;
-    float vx = (targetx - x) / elapsedTime;
-    float vy = (targety - y) / elapsedTime;
+    float elapsedTime = millis() - velocityTime;
+    float vx = (velocityx - x) / elapsedTime;
+    float vy = (velocityy - y) / elapsedTime;
     
     boolean val = motorTargetVelocity(id, x, y, vx, vy);
     
-    targetx = x;
-    targety = y;
-    targetTime = millis();
+    velocityx = x;
+    velocityy = y;
+    velocityTime = millis();
     return val;
   }
   
   boolean velocityTargetAngle(int x, int y, int theta) {
-    float elapsedTime = millis() - targetTime;
-    float vx = (targetx - x) / elapsedTime;
-    float vy = (targety - y) / elapsedTime;
+    float elapsedTime = millis() - velocityTime;
+    float vx = (velocityx - x) / elapsedTime;
+    float vy = (velocityy - y) / elapsedTime;
     
     boolean val = motorTargetVelocityAngle(id, x, y, vx, vy, theta);
     
-    targetx = x;
-    targety = y;
-    targetTime = millis();
+    velocityx = x;
+    velocityy = y;
+    velocityTime = millis();
     return val;
   }
   
